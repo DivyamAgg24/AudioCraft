@@ -2,9 +2,7 @@ import React, { createContext, useContext, useState, useEffect, type ReactNode }
 import type { User, AuthContextType } from '../types/user';
 import axios, { type AxiosResponse } from 'axios';
 import type { AudioBook } from '../types';
-import dotenv from 'dotenv';
 
-dotenv.config()
 
 interface ExtendedUser extends User {
     apiToken?: string;

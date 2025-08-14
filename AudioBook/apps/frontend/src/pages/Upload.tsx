@@ -2,9 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader, Download, Play, Pause } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { AudioBook } from '../types';
-import dotenv from "dotenv"
 
-dotenv.config()
 
 const UploadPage = () => {
     const [dragActive, setDragActive] = useState(false);
