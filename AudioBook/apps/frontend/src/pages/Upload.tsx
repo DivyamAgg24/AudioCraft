@@ -108,7 +108,7 @@ const UploadPage = () => {
             console.log('Uploading file:', uploadedFile.name);
 
             // Generate the audiobook
-            const response = await makeAuthenticatedFormRequest(`${process.env.PYTHON_BACKEND_URL}/v1/generate`, formData);
+            const response = await makeAuthenticatedFormRequest(`${import.meta.env.PYTHON_BACKEND_URL}/v1/generate`, formData);
             const audioBlob = new Blob([response.data], { type: 'audio/wav' });
 
             // Store the audiobook in Appwrite and database

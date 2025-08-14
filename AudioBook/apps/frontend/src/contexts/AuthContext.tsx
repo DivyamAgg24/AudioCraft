@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch(`${process.env.VITE_API_URL}/api/user`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user`, {
                 credentials: 'include',
             });
 
@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const refreshToken = async () => {
         try {
-            const response = await fetch(`${process.env.VITE_API_URL}/api/refresh-token`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/refresh-token`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -178,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchAudioBooks = async () => {
         try {
-            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/getaudiobooks`);
+            const response = await makeAuthenticatedRequest(`${import.meta.env.VITE_API_URL}/api/getaudiobooks`);
 
             if (response.ok) {
                 const books = await response.json();
@@ -199,7 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             formData.append('title', title);
             formData.append('originalFileName', originalFileName);
 
-            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/createAudioBook`, {
+            const response = await makeAuthenticatedRequest(`${import.meta.env.VITE_API_URL}/api/createAudioBook`, {
                 method: 'POST',
                 body: formData,
             });
@@ -223,7 +223,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const deleteAudioBook = async (id: string) => {
         try {
-            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/audiobooks/${id}`, {
+            const response = await makeAuthenticatedRequest(`${import.meta.env.VITE_API_URL}/api/audiobooks/${id}`, {
                 method: 'DELETE',
             });
 
@@ -243,7 +243,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const getDownloadUrl = async (id: string)=> {
         try {
-            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/audiobooks/${id}/download`);
+            const response = await makeAuthenticatedRequest(`${import.meta.env.VITE_API_URL}/api/audiobooks/${id}/download`);
 
             if (!response.ok) {
                 throw new Error('Failed to get download URL');
@@ -258,14 +258,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const login = () => {
-        window.location.href = `${process.env.VITE_API_URL}/auth/google`;
+        window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
     };
 
     const logout = () => {
         setUser(null);
         setApiToken(null);
         setAudioBooks([]);
-        window.location.href = `${process.env.VITE_API_URL}/auth/logout`;
+        window.location.href = `${import.meta.env.VITE_API_URL}/auth/logout`;
     };
 
     const value = React.useMemo(
