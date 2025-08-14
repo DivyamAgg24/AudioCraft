@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader, Download, Play, Pause } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { AudioBook } from '../types';
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const UploadPage = () => {
     const [dragActive, setDragActive] = useState(false);
@@ -105,7 +108,7 @@ const UploadPage = () => {
             console.log('Uploading file:', uploadedFile.name);
 
             // Generate the audiobook
-            const response = await makeAuthenticatedFormRequest('http://localhost:3000/v1/generate', formData);
+            const response = await makeAuthenticatedFormRequest(`${process.env.PYTHON_BACKEND_URL}/v1/generate`, formData);
             const audioBlob = new Blob([response.data], { type: 'audio/wav' });
 
             // Store the audiobook in Appwrite and database

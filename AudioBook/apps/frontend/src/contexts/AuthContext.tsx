@@ -1,150 +1,10 @@
-// import React, { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-// import type { User, AuthContextType } from "../types/user"
-// import axios, { type AxiosResponse } from "axios"
-
-// interface ExtendedUser extends User {
-//     apiToken?: string
-// }
-
-// interface ExtendedAuthContextType extends Omit<AuthContextType, 'user'> {
-//     user: ExtendedUser | null;
-//     apiToken: string | null;
-//     makeAuthenticatedFormRequest: (url: string, formData: FormData) => Promise<AxiosResponse<Blob>>
-// }
-
-// const AuthContext = createContext<ExtendedAuthContextType | undefined>(undefined)
-
-// export const useAuth = () => {
-//     const context = useContext(AuthContext);
-//     if (context == undefined) {
-//         throw new Error('useAuth must be used within an AuthProvider')
-//     }
-//     return context;
-// }
-
-// interface AuthProviderProps {
-//     children: ReactNode
-// }
-
-// export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-//     const [user, setUser] = useState<User | null>(null)
-//     const [loading, setLoading] = useState(true)
-//     const [apiToken, setApiToken] = useState<string | null>(null)
-
-//     useEffect(() => {
-//         checkAuthStatus()
-//     }, [])
-
-//     const checkAuthStatus = async () => {
-//         try {
-//             const response = await fetch('http://localhost:5000/api/user', {
-//                 credentials: 'include'
-//             });
-
-//             if (response.ok) {
-//                 const userData = await response.json();
-//                 setUser(userData);
-//                 setApiToken(userData.apiToken || null)
-//             }
-//             console.log("Auth checked")
-//         } catch (error) {
-//             console.error('Auth check failed:', error);
-//         } finally {
-//             setLoading(false);
-//         }
-//     }
-
-//     const refreshToken = async () => {
-//         try {
-//             const response = await fetch('http://localhost:5000/api/refresh-token', {
-//                 method: 'POST',
-//                 credentials: 'include'
-//             });
-
-//             if (response.ok) {
-//                 const data = await response.json();
-//                 setApiToken(data.token);
-//                 return data.token;
-//             }
-//         } catch (error) {
-//             console.error('Token refresh failed:', error);
-//         }
-//         return null;
-//     };
-//     const makeAuthenticatedFormRequest = async (url: string, formData: FormData): Promise<AxiosResponse<Blob>> => {
-//         let token = apiToken;
-
-//         // Refresh token if not available
-//         if (!token) {
-//             token = await refreshToken();
-//             if (!token) {
-//                 throw new Error('No authentication token available');
-//             }
-//         }
-
-//         try {
-//             const response = await axios.post(url, formData, {
-//                 headers: {
-//                     'Authorization': `Bearer ${token}`,
-//                     'Content-Type': 'multipart/form-data',
-//                 },
-//                 responseType: 'blob',
-//                 timeout: 300000, // 5 minutes
-//             });
-
-//             return response;
-
-//         } catch (error: any) {
-//             // Retry once on 401
-//             if (error.response?.status === 401) {
-//                 const newToken = await refreshToken();
-//                 if (newToken) {
-//                     const retryResponse = await axios.post(url, formData, {
-//                         headers: {
-//                             'Authorization': `Bearer ${newToken}`,
-//                             'Content-Type': 'multipart/form-data',
-//                         },
-//                         responseType: 'blob',
-//                         timeout: 300000,
-//                     });
-//                     return retryResponse;
-//                 }
-//             }
-
-//             throw error;
-//         }
-//     };
-
-//     const login = () => {
-//         window.location.href = 'http://localhost:5000/auth/google';
-//     };
-
-//     const logout = () => {
-//         setUser(null);
-//         setApiToken(null);
-//         window.location.href = 'http://localhost:5000/auth/logout';
-//     };
-
-//     const value = {
-//         user,
-//         loading,
-//         login,
-//         logout,
-//         apiToken,
-//         makeAuthenticatedFormRequest
-//     };
-
-//     return (
-//         <AuthContext.Provider value={value}>
-//             {children}
-//         </AuthContext.Provider>
-//     );
-// }
-
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User, AuthContextType } from '../types/user';
 import axios, { type AxiosResponse } from 'axios';
 import type { AudioBook } from '../types';
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 interface ExtendedUser extends User {
     apiToken?: string;
@@ -194,7 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/user', {
+            const response = await fetch(`${process.env.VITE_API_URL}/api/user`, {
                 credentials: 'include',
             });
 
@@ -213,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const refreshToken = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/refresh-token', {
+            const response = await fetch(`${process.env.VITE_API_URL}/api/refresh-token`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -318,7 +178,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const fetchAudioBooks = async () => {
         try {
-            const response = await makeAuthenticatedRequest('http://localhost:5000/api/getaudiobooks');
+            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/getaudiobooks`);
 
             if (response.ok) {
                 const books = await response.json();
@@ -339,7 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             formData.append('title', title);
             formData.append('originalFileName', originalFileName);
 
-            const response = await makeAuthenticatedRequest('http://localhost:5000/api/createAudioBook', {
+            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/createAudioBook`, {
                 method: 'POST',
                 body: formData,
             });
@@ -363,7 +223,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const deleteAudioBook = async (id: string) => {
         try {
-            const response = await makeAuthenticatedRequest(`http://localhost:5000/api/audiobooks/${id}`, {
+            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/audiobooks/${id}`, {
                 method: 'DELETE',
             });
 
@@ -383,7 +243,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     const getDownloadUrl = async (id: string)=> {
         try {
-            const response = await makeAuthenticatedRequest(`http://localhost:5000/api/audiobooks/${id}/download`);
+            const response = await makeAuthenticatedRequest(`${process.env.VITE_API_URL}/api/audiobooks/${id}/download`);
 
             if (!response.ok) {
                 throw new Error('Failed to get download URL');
@@ -398,14 +258,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const login = () => {
-        window.location.href = 'http://localhost:5000/auth/google';
+        window.location.href = `${process.env.VITE_API_URL}/auth/google`;
     };
 
     const logout = () => {
         setUser(null);
         setApiToken(null);
         setAudioBooks([]);
-        window.location.href = 'http://localhost:5000/auth/logout';
+        window.location.href = `${process.env.VITE_API_URL}/auth/logout`;
     };
 
     const value = React.useMemo(
